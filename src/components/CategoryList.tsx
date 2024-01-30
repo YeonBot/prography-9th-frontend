@@ -36,6 +36,7 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
       {categories.map((category) => {
         return (
           <CategoryContainer
+            selected={false}
             key={category.idCategory}
             data-category={category.strCategory}
             onClick={handleClickCategory}
@@ -58,17 +59,26 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
 
 const CategoryListContainer = styled("div")`
   display: flex;
-  flex-direction: column;
-
   align-items: center;
-  justify-content: center;
 
-  gap 1rem;
+  gap: 1rem;
+
+  flex-wrap: wrap;
 `;
 
-const CategoryContainer = styled("div")`
+const CategoryContainer = styled("div")<{
+  selected: boolean;
+}>`
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  border: 1px solid white;
+  border-radius: 100px;
+  padding: 0.5rem;
+
+  cursor: pointer;
+
+  background-color: ${({ selected }) => (selected ? "white" : "transparent")};
+  color: ${({ selected }) => (selected ? "black" : "white")};
 `;
