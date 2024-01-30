@@ -65,28 +65,37 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
   };
 
   return (
-    <CategoryListContainer>
-      {categories.map((category) => {
-        return (
-          <CategoryContainer
-            selected={selectedCategory.includes(category.strCategory)}
-            key={category.idCategory}
-            data-category={category.strCategory}
-            onClick={handleClickCategory}
-          >
-            {category.strCategory}
-          </CategoryContainer>
-        );
-      })}
-      {meals.map((meal) => {
-        return (
-          <div key={meal.idMeal}>
-            <img src={meal.strMealThumb} alt={meal.strMeal} />
-            {meal.strMeal}
-          </div>
-        );
-      })}
-    </CategoryListContainer>
+    <>
+      <CategoryListContainer>
+        {categories.map((category) => {
+          return (
+            <CategoryContainer
+              selected={selectedCategory.includes(category.strCategory)}
+              key={category.idCategory}
+              data-category={category.strCategory}
+              onClick={handleClickCategory}
+            >
+              {category.strCategory}
+            </CategoryContainer>
+          );
+        })}
+      </CategoryListContainer>
+
+      <InfoContainer>
+        <h1>Total Meals</h1>
+        <div>{meals.length}</div>
+      </InfoContainer>
+      <MealListContainer>
+        {meals.map((meal) => {
+          return (
+            <div key={meal.idMeal}>
+              <img src={meal.strMealThumb} alt={meal.strMeal} />
+              {meal.strMeal}
+            </div>
+          );
+        })}
+      </MealListContainer>
+    </>
   );
 };
 
@@ -114,4 +123,29 @@ const CategoryContainer = styled("div")<{
 
   background-color: ${({ selected }) => (selected ? "white" : "transparent")};
   color: ${({ selected }) => (selected ? "black" : "white")};
+`;
+
+const InfoContainer = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1rem;
+
+  flex-wrap: wrap;
+`;
+
+const MealListContainer = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1rem;
+
+  flex-wrap: wrap;
+
+  img {
+    width: 100px;
+    height: 100px;
+  }
 `;
