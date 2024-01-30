@@ -8,6 +8,8 @@ interface CategoryListProps {}
 export const CategoryList = function CategoryList({}: CategoryListProps) {
   const [categories, setCategories] = useState<Category[]>([]);
 
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+
   const [meals, setMeals] = useState<Meal[]>([]);
 
   useEffect(() => {
@@ -15,6 +17,28 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
       setCategories(_categories);
     });
   }, []);
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      return;
+    }
+
+    getAllMealsBySelectedCategory();
+  }, [selectedCategory]);
+
+  const getAllMealsBySelectedCategory = async () => {
+    if (!selectedCategory) {
+      return;
+    }
+
+    const _meals = await Promise.all(
+      selectedCategory.map((category) => {
+        return getMealsByCategory(category);
+      })
+    );
+
+    setMeals(_meals.flat());
+  };
 
   const handleClickCategory = async (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -26,9 +50,18 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
       return;
     }
 
-    const _meals = await getMealsByCategory(category);
+    setSelectedCategory((prev) => {
+      if (prev.length === 0) {
+        return [category];
+      }
 
-    setMeals(_meals);
+      const isAlreadySelected = prev.includes(category);
+      if (isAlreadySelected) {
+        return prev.filter((item) => item !== category);
+      }
+
+      return [...prev, category];
+    });
   };
 
   return (
@@ -36,7 +69,7 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
       {categories.map((category) => {
         return (
           <CategoryContainer
-            selected={false}
+            selected={selectedCategory.includes(category.strCategory)}
             key={category.idCategory}
             data-category={category.strCategory}
             onClick={handleClickCategory}
