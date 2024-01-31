@@ -1,14 +1,20 @@
 import styled from "styled-components";
+import { useInView } from "react-intersection-observer";
 import { getCategories, getMealsByCategory } from "../apis/category";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Category, Meal } from "../types/category";
 
 interface CategoryListProps {}
+
+// 한 페이지에 보여줄 meal 의 갯수를 20
+const MEAL_PER_PAGE = 20;
 
 export const CategoryList = function CategoryList({}: CategoryListProps) {
   const [categories, setCategories] = useState<Category[]>([]);
 
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+
+  const [page, setPage] = useState<number>(1);
 
   const [meals, setMeals] = useState<Meal[]>([]);
 
@@ -25,6 +31,18 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
 
     getAllMealsBySelectedCategory();
   }, [selectedCategory]);
+
+  const { ref, inView, entry } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (!inView) {
+      return;
+    }
+
+    setPage((prev) => prev + 1);
+  }, [inView]);
 
   const getAllMealsBySelectedCategory = async () => {
     if (!selectedCategory) {
@@ -64,6 +82,10 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
     });
   };
 
+  const showedMeals = useMemo(() => {
+    return meals.slice(0, Math.min(page * MEAL_PER_PAGE, meals.length));
+  }, [meals, page]);
+
   return (
     <>
       <CategoryListContainer>
@@ -86,14 +108,15 @@ export const CategoryList = function CategoryList({}: CategoryListProps) {
         <div>{meals.length}</div>
       </InfoContainer>
       <MealListContainer>
-        {meals.map((meal) => {
+        {showedMeals.map((meal) => {
           return (
-            <div key={meal.idMeal}>
+            <MealContainer key={meal.idMeal}>
               <img src={meal.strMealThumb} alt={meal.strMeal} />
               {meal.strMeal}
-            </div>
+            </MealContainer>
           );
         })}
+        <div ref={ref}>나를 봤다면, 이벤트 실행!!</div>
       </MealListContainer>
     </>
   );
@@ -136,9 +159,11 @@ const InfoContainer = styled("div")`
 `;
 
 const MealListContainer = styled("div")`
-  display: flex;
+  display: grid;
   align-items: center;
   justify-content: center;
+
+  grid-template-columns: repeat(4, 1fr);
 
   gap: 1rem;
 
@@ -148,4 +173,12 @@ const MealListContainer = styled("div")`
     width: 100px;
     height: 100px;
   }
+`;
+
+const MealContainer = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-direction: column;
 `;
