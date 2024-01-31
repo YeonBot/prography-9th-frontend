@@ -1,15 +1,15 @@
 import "./App.css";
 import "./reset.css";
-import { CategoryList } from "./components/CategoryList";
 import { Header } from "./components/Header";
 import styled from "styled-components";
+import { Home } from "./components/Home";
 
 function App() {
   return (
     <AppContainer className="App">
       <Header />
       <Layout>
-        <CategoryList />
+        <Home />
       </Layout>
     </AppContainer>
   );
