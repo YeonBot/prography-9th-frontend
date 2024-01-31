@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Meal } from "../types/category";
+import { MealThumb } from "./MealThumb";
 
 interface MealListProps {
   meals: Meal[];
@@ -14,14 +15,16 @@ export const MealList = function MealList({
     <>
       <InfoContainer>
         <h1>Total Meals</h1>
-        <div>{meals.length}</div>
+        <div>
+          {showedMeals.length} / {meals.length}
+        </div>
       </InfoContainer>
       <MealListContainer>
         {showedMeals.map((meal) => {
           return (
             <MealContainer key={meal.idMeal}>
-              <img src={meal.strMealThumb} alt={meal.strMeal} />
-              {meal.strMeal}
+              <MealThumb src={meal.strMealThumb} alt={meal.strMeal} />
+              <MealTitle>{meal.strMeal}</MealTitle>
             </MealContainer>
           );
         })}
@@ -50,11 +53,6 @@ const MealListContainer = styled("div")`
   gap: 1rem;
 
   flex-wrap: wrap;
-
-  img {
-    width: 100px;
-    height: 100px;
-  }
 `;
 
 const MealContainer = styled("div")`
@@ -63,4 +61,8 @@ const MealContainer = styled("div")`
   justify-content: center;
 
   flex-direction: column;
+
+  gap: 1rem;
 `;
+
+const MealTitle = styled("div")``;
