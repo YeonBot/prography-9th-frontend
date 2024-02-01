@@ -6,6 +6,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Category, Meal } from "../types/category";
 import { MealList } from "./MealList";
 import { Select, Option } from "./Select";
+import { useQueryString } from "../hooks/useQueryString";
+import { SortOption } from "../types/sort";
 
 const MEAL_PER_PAGE = 20;
 
@@ -14,14 +16,32 @@ interface HomeProps {}
 export const Home = function Home({}: HomeProps) {
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-
   const [page, setPage] = useState<number>(1);
 
   const [meals, setMeals] = useState<Meal[]>([]);
 
   const [mealCountPerRow, setMealCountPerRow] = useState<number>(4);
-  const [sort, setSort] = useState<"new" | "asc" | "desc">("new");
+
+  const { value: categoryValue, set: setCategoryValue } = useQueryString(
+    "category",
+    {
+      defaultValue: "",
+      type: "array",
+    }
+  );
+  const [selectedCategory, setSelectedCategory] = useState<string[]>(
+    categoryValue.split(",").filter((item) => item)
+  );
+
+  useEffect(() => {
+    setCategoryValue(selectedCategory.join(","));
+  }, [selectedCategory]);
+
+  const { value: filterValue, set: setFilterValue } = useQueryString("filter", {
+    defaultValue: "new",
+    type: "string",
+  });
+  const [sort, setSort] = useState<SortOption>(filterValue as SortOption);
 
   useEffect(() => {
     getCategories().then((_categories: Category[]) => {
@@ -122,6 +142,7 @@ export const Home = function Home({}: HomeProps) {
           const value = target.value;
 
           setSort(value as "new" | "asc" | "desc");
+          setFilterValue(value);
         }}
       >
         <Option value="new">new</Option>
