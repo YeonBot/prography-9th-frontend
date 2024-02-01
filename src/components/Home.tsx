@@ -5,6 +5,7 @@ import { getCategories, getMealsByCategory } from "../apis/category";
 import { useEffect, useMemo, useState } from "react";
 import { Category, Meal } from "../types/category";
 import { MealList } from "./MealList";
+import { Select, Option } from "./Select";
 
 const MEAL_PER_PAGE = 20;
 
@@ -18,6 +19,9 @@ export const Home = function Home({}: HomeProps) {
   const [page, setPage] = useState<number>(1);
 
   const [meals, setMeals] = useState<Meal[]>([]);
+
+  const [mealCountPerRow, setMealCountPerRow] = useState<number>(4);
+  const [sort, setSort] = useState<"new" | "asc" | "desc">("new");
 
   useEffect(() => {
     getCategories().then((_categories: Category[]) => {
@@ -84,8 +88,24 @@ export const Home = function Home({}: HomeProps) {
   };
 
   const showedMeals = useMemo(() => {
-    return meals.slice(0, Math.min(page * MEAL_PER_PAGE, meals.length));
-  }, [meals, page]);
+    return [...meals]
+      .sort((a, b) => {
+        if (sort === "new") {
+          return b.idMeal - a.idMeal;
+        }
+
+        if (sort === "asc") {
+          return a.strMeal.localeCompare(b.strMeal);
+        }
+
+        if (sort === "desc") {
+          return b.strMeal.localeCompare(a.strMeal);
+        }
+
+        return 0;
+      })
+      .slice(0, Math.min(page * MEAL_PER_PAGE, meals.length));
+  }, [meals, page, sort]);
 
   return (
     <HomeContainer>
@@ -94,7 +114,39 @@ export const Home = function Home({}: HomeProps) {
         selectedCategory={selectedCategory}
         handleClickCategory={handleClickCategory}
       />
-      <MealList meals={meals} showedMeals={showedMeals} />
+
+      <Select
+        value={sort}
+        onChange={(event) => {
+          const target = event.target as HTMLSelectElement;
+          const value = target.value;
+
+          setSort(value as "new" | "asc" | "desc");
+        }}
+      >
+        <Option value="new">new</Option>
+        <Option value="asc">asc</Option>
+        <Option value="desc">desc</Option>
+      </Select>
+
+      <Select
+        value={mealCountPerRow}
+        onChange={(event) => {
+          const target = event.target as HTMLSelectElement;
+          const value = target.value;
+
+          setMealCountPerRow(Number(value));
+        }}
+      >
+        <Option value="2">2</Option>
+        <Option value="4">4</Option>
+      </Select>
+
+      <MealList
+        meals={meals}
+        showedMeals={showedMeals}
+        mealCountPerRow={mealCountPerRow}
+      />
       <div ref={ref}>나를 봤다면, 이벤트 실행!!</div>
     </HomeContainer>
   );

@@ -8,5 +8,5 @@ export interface Category {
 export interface Meal {
   strMeal: string;
   strMealThumb: string;
-  idMeal: string;
+  idMeal: number;
 }

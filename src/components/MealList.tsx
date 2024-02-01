@@ -5,11 +5,13 @@ import { MealThumb } from "./MealThumb";
 interface MealListProps {
   meals: Meal[];
   showedMeals: Meal[];
+  mealCountPerRow: number;
 }
 
 export const MealList = function MealList({
   meals,
   showedMeals,
+  mealCountPerRow,
 }: MealListProps) {
   return (
     <>
@@ -19,7 +21,7 @@ export const MealList = function MealList({
           {showedMeals.length} / {meals.length}
         </div>
       </InfoContainer>
-      <MealListContainer>
+      <MealListContainer mealCountPerRow={mealCountPerRow}>
         {showedMeals.map((meal) => {
           return (
             <MealContainer key={meal.idMeal}>
@@ -43,12 +45,16 @@ const InfoContainer = styled("div")`
   flex-wrap: wrap;
 `;
 
-const MealListContainer = styled("div")`
+const MealListContainer = styled("div")<{
+  mealCountPerRow: number;
+}>`
   display: grid;
   align-items: center;
   justify-content: center;
 
-  grid-template-columns: repeat(4, 1fr);
+  ${({ mealCountPerRow }) => {
+    return `grid-template-columns: repeat(${mealCountPerRow}, 1fr);`;
+  }}
 
   gap: 1rem;
 
