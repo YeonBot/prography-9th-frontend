@@ -8,6 +8,7 @@ import { MealList } from "./MealList";
 import { Select, Option } from "./Select";
 import { useQueryString } from "../hooks/useQueryString";
 import { SortOption } from "../types/sort";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 const MEAL_PER_PAGE = 20;
 
@@ -20,7 +21,13 @@ export const Home = function Home({}: HomeProps) {
 
   const [meals, setMeals] = useState<Meal[]>([]);
 
-  const [mealCountPerRow, setMealCountPerRow] = useState<number>(4);
+  const isMobile = useIsMobile();
+  const [mealCountPerRow, setMealCountPerRow] = useState<number>(
+    isMobile ? 1 : 4
+  );
+  useEffect(() => {
+    setMealCountPerRow(isMobile ? 1 : 4);
+  }, [isMobile]);
 
   const { value: categoryValue, set: setCategoryValue } = useQueryString(
     "category",
@@ -150,18 +157,20 @@ export const Home = function Home({}: HomeProps) {
         <Option value="desc">desc</Option>
       </Select>
 
-      <Select
-        value={mealCountPerRow}
-        onChange={(event) => {
-          const target = event.target as HTMLSelectElement;
-          const value = target.value;
+      {!isMobile && (
+        <Select
+          value={mealCountPerRow}
+          onChange={(event) => {
+            const target = event.target as HTMLSelectElement;
+            const value = target.value;
 
-          setMealCountPerRow(Number(value));
-        }}
-      >
-        <Option value="2">2</Option>
-        <Option value="4">4</Option>
-      </Select>
+            setMealCountPerRow(Number(value));
+          }}
+        >
+          <Option value="2">2</Option>
+          <Option value="4">4</Option>
+        </Select>
+      )}
 
       <MealList
         meals={meals}
