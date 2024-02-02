@@ -66,7 +66,7 @@ export const Home = function Home({}: HomeProps) {
     }
 
     getAllMealsBySelectedCategory();
-  }, [selectedCategory]);
+  }, [selectedCategory, categories]);
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -85,8 +85,12 @@ export const Home = function Home({}: HomeProps) {
       return;
     }
 
+    const filteredCategory = selectedCategory.filter((category) => {
+      return categories.some((item) => item.strCategory === category);
+    });
+
     const _meals = await Promise.all(
-      selectedCategory.map((category) => {
+      filteredCategory.map((category) => {
         return getMealsByCategory(category);
       })
     );
