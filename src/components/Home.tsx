@@ -52,7 +52,11 @@ export const Home = function Home({}: HomeProps) {
 
   useEffect(() => {
     getCategories().then((_categories: Category[]) => {
-      setCategories(_categories);
+      setCategories(
+        [..._categories].sort((a, b) => {
+          return Number(a.idCategory) - Number(b.idCategory);
+        })
+      );
     });
   }, []);
 
