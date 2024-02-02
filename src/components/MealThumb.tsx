@@ -19,6 +19,6 @@ export const MealThumb = function MealThumb({ src, alt }: MealThumbProps) {
 };
 
 const MealThumbImage = styled("img")`
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
 `;

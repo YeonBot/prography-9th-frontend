@@ -14,36 +14,18 @@ export const MealList = function MealList({
   mealCountPerRow,
 }: MealListProps) {
   return (
-    <>
-      <InfoContainer>
-        <h1>Total Meals</h1>
-        <div>
-          {showedMeals.length} / {meals.length}
-        </div>
-      </InfoContainer>
-      <MealListContainer mealCountPerRow={mealCountPerRow}>
-        {showedMeals.map((meal) => {
-          return (
-            <MealContainer key={meal.idMeal}>
-              <MealThumb src={meal.strMealThumb} alt={meal.strMeal} />
-              <MealTitle>{meal.strMeal}</MealTitle>
-            </MealContainer>
-          );
-        })}
-      </MealListContainer>
-    </>
+    <MealListContainer mealCountPerRow={mealCountPerRow}>
+      {showedMeals.map((meal) => {
+        return (
+          <MealContainer key={meal.idMeal}>
+            <MealThumb src={meal.strMealThumb} alt={meal.strMeal} />
+            <MealTitle>{meal.strMeal}</MealTitle>
+          </MealContainer>
+        );
+      })}
+    </MealListContainer>
   );
 };
-
-const InfoContainer = styled("div")`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 1rem;
-
-  flex-wrap: wrap;
-`;
 
 const MealListContainer = styled("div")<{
   mealCountPerRow: number;

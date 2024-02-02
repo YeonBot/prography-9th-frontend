@@ -17,7 +17,7 @@ interface HomeProps {}
 export const Home = function Home({}: HomeProps) {
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(0);
 
   const [meals, setMeals] = useState<Meal[]>([]);
 
@@ -146,35 +146,45 @@ export const Home = function Home({}: HomeProps) {
         handleClickCategory={handleClickCategory}
       />
 
-      <Select
-        value={sort}
-        onChange={(event) => {
-          const target = event.target as HTMLSelectElement;
-          const value = target.value;
+      <InfoAndSortContainer>
+        <InfoContainer>
+          {!isMobile && <h1>Total Meals</h1>}
+          <div>
+            {showedMeals.length} / {meals.length}
+          </div>
+        </InfoContainer>
+        <SelectContainer>
+          <Select
+            value={sort}
+            onChange={(event) => {
+              const target = event.target as HTMLSelectElement;
+              const value = target.value;
 
-          setSort(value as "new" | "asc" | "desc");
-          setFilterValue(value);
-        }}
-      >
-        <Option value="new">new</Option>
-        <Option value="asc">asc</Option>
-        <Option value="desc">desc</Option>
-      </Select>
+              setSort(value as SortOption);
+              setFilterValue(value);
+            }}
+          >
+            <Option value="new">최신순</Option>
+            <Option value="asc">오름차순</Option>
+            <Option value="desc">내림차순</Option>
+          </Select>
 
-      {!isMobile && (
-        <Select
-          value={mealCountPerRow}
-          onChange={(event) => {
-            const target = event.target as HTMLSelectElement;
-            const value = target.value;
+          {!isMobile && (
+            <Select
+              value={mealCountPerRow}
+              onChange={(event) => {
+                const target = event.target as HTMLSelectElement;
+                const value = target.value;
 
-            setMealCountPerRow(Number(value));
-          }}
-        >
-          <Option value="2">2</Option>
-          <Option value="4">4</Option>
-        </Select>
-      )}
+                setMealCountPerRow(Number(value));
+              }}
+            >
+              <Option value="2">2개씩 보기</Option>
+              <Option value="4">4개씩 보기</Option>
+            </Select>
+          )}
+        </SelectContainer>
+      </InfoAndSortContainer>
 
       <MealList
         meals={meals}
@@ -186,4 +196,44 @@ export const Home = function Home({}: HomeProps) {
   );
 };
 
-const HomeContainer = styled("div")``;
+const HomeContainer = styled("div")`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1rem;
+`;
+
+const InfoAndSortContainer = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  gap: 1rem;
+`;
+
+const SelectContainer = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1rem;
+`;
+
+const InfoContainer = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 400;
+  font-size: 1.2rem;
+  line-height: 24px;
+  letter-spacing: 0;
+
+  gap: 1rem;
+
+  flex-wrap: wrap;
+`;
