@@ -53,4 +53,9 @@ const MealContainer = styled("div")`
   gap: 1rem;
 `;
 
-const MealTitle = styled("div")``;
+const MealTitle = styled("div")`
+  display: flex;
+  justify-content: center;
+
+  height: 2rem;
+`;
