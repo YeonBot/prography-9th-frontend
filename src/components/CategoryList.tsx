@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Category } from "../types/category";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 interface CategoryListProps {
   categories: Category[];
@@ -12,14 +13,17 @@ export const CategoryList = function CategoryList({
   selectedCategory,
   handleClickCategory,
 }: CategoryListProps) {
+  const isMobile = useIsMobile();
+
   return (
-    <CategoryListContainer>
+    <CategoryListContainer isMobile={isMobile}>
       {categories.map((category) => {
         return (
           <CategoryContainer
-            selected={selectedCategory.includes(category.strCategory)}
             key={category.idCategory}
             data-category={category.strCategory}
+            selected={selectedCategory.includes(category.strCategory)}
+            isMobile={isMobile}
             onClick={handleClickCategory}
           >
             {category.strCategory}
@@ -30,28 +34,45 @@ export const CategoryList = function CategoryList({
   );
 };
 
-const CategoryListContainer = styled("div")`
+const CategoryListContainer = styled("div")<{
+  isMobile?: boolean;
+}>`
   display: flex;
   align-items: center;
 
-  gap: 1rem;
+  gap: ${({ isMobile }) => (isMobile ? "0.5rem" : "1rem")};
 
   flex-wrap: wrap;
 `;
 
 const CategoryContainer = styled("div")<{
   selected: boolean;
+  isMobile?: boolean;
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 1px solid white;
   border-radius: 100px;
-  padding: 0.5rem;
+
+  ${({ isMobile }) => {
+    return isMobile
+      ? `
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    `
+      : `
+    padding: 10px 14px;
+    font-size: 1.2rem;
+    `;
+  }}
 
   cursor: pointer;
+  &:hover {
+    background-color: ${({ selected }) => (selected ? "#ff87a2" : "#333336")};
+  }
 
-  background-color: ${({ selected }) => (selected ? "white" : "transparent")};
-  color: ${({ selected }) => (selected ? "black" : "white")};
+  background-color: ${({ selected }) => (selected ? "#fa2454" : "#1c1c1e")};
+  border: 0.1px solid #e2e2e2;
+  color: #e2e2e2;
 `;

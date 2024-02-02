@@ -24,7 +24,12 @@ const Layout = styled.div`
   display: flex;
   flex-direction: column;
 
-  padding: 2rem;
+  @media screen {
+    padding: 2rem 10rem;
+  }
+  @media screen and (max-width: 768px) {
+    padding: 1rem 2rem;
+  }
 
   & > * {
     margin-bottom: 2rem;
