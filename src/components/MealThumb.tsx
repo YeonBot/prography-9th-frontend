@@ -12,7 +12,7 @@ export const MealThumb = function MealThumb({ src, alt }: MealThumbProps) {
   return (
     <MealThumbImage
       ref={elementRef as any}
-      src={isVisible ? src : "/images/placeholder.png"}
+      src={isVisible ? src : "/placeholder.jpeg"}
       alt={alt}
     />
   );
