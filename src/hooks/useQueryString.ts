@@ -5,7 +5,11 @@ export const useQueryString = (queryKey: string) => {
 
   const setQueryStringValue = (value: string) => {
     const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set(queryKey, value);
+    if (value) {
+      searchParams.set(queryKey, value);
+    } else {
+      searchParams.delete(queryKey);
+    }
     const newRelativePathQuery = `${
       window.location.pathname
     }?${searchParams.toString()}`;

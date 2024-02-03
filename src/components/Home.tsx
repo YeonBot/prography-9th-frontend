@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { CategoryList } from "./CategoryList";
-import { useInView } from "react-intersection-observer";
 import { getCategories, getMealsByCategory } from "../apis/meal";
 import { useEffect, useMemo, useState } from "react";
 import { Category, Meal } from "../types/meal";
@@ -10,6 +9,7 @@ import { useQueryString } from "../hooks/useQueryString";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { SortOption, sortOptions } from "../constants.ts/sort";
 import { layoutOption } from "../constants.ts/layout";
+import { useInfinityScrollPage } from "../hooks/useInfinityScrollPage";
 
 const MEAL_PER_PAGE = 20;
 const MOBILE_DEFAULT_LAYOUT = 1;
@@ -18,8 +18,6 @@ const WEB_DEFAULT_LAYOUT = 4;
 export const Home = function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
-
-  const [page, setPage] = useState<number>(0);
 
   const isMobile = useIsMobile();
   const initMealCountRerRow = isMobile
@@ -37,16 +35,13 @@ export const Home = function Home() {
     categoryValue?.split(",").filter((item) => item) || []
   );
 
-  useEffect(() => {
-    setCategoryValue(selectedCategory.join(","));
-  }, [selectedCategory]);
-
   const { value: filterValue, set: setFilterValue } = useQueryString("filter");
 
   const [sort, setSort] = useState<SortOption>(
     (filterValue || "new") as SortOption
   );
 
+  // when page open, fetch category list
   useEffect(() => {
     getCategories().then((_categories: Category[]) => {
       setCategories(
@@ -57,25 +52,28 @@ export const Home = function Home() {
     });
   }, []);
 
+  // when change selectCategory, change query and fetch new meal list
   useEffect(() => {
     if (!selectedCategory) {
       return;
     }
 
-    getAllMealsBySelectedCategory();
-  }, [selectedCategory, categories]);
-
-  const { ref, inView } = useInView({
-    threshold: 0,
-  });
-
-  useEffect(() => {
-    if (!inView) {
+    if (categories.length === 0) {
       return;
     }
 
-    setPage((prev) => prev + 1);
-  }, [inView]);
+    setCategoryValue(selectedCategory.join(","));
+
+    getAllMealsBySelectedCategory();
+  }, [selectedCategory, categories]);
+
+  const { ref, page, setPage } = useInfinityScrollPage();
+
+  // when sort change, initialize page and change query
+  useEffect(() => {
+    setPage(1);
+    setFilterValue(sort);
+  }, [sort]);
 
   const getAllMealsBySelectedCategory = async () => {
     if (!selectedCategory) {
@@ -150,8 +148,6 @@ export const Home = function Home() {
     const value = target.value;
 
     setSort(value as SortOption);
-    setPage(1);
-    setFilterValue(value);
   };
 
   const handleChangeLayout = (event: React.ChangeEvent) => {
