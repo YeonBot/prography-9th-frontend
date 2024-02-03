@@ -1,54 +1,51 @@
 import styled from "styled-components";
 import { CategoryList } from "./CategoryList";
 import { useInView } from "react-intersection-observer";
-import { getCategories, getMealsByCategory } from "../apis/category";
+import { getCategories, getMealsByCategory } from "../apis/meal";
 import { useEffect, useMemo, useState } from "react";
-import { Category, Meal } from "../types/category";
+import { Category, Meal } from "../types/meal";
 import { MealList } from "./MealList";
 import { Select, Option } from "./Select";
 import { useQueryString } from "../hooks/useQueryString";
-import { SortOption } from "../types/sort";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { SortOption, sortOptions } from "../constants.ts/sort";
+import { layoutOption } from "../constants.ts/layout";
 
 const MEAL_PER_PAGE = 20;
+const MOBILE_DEFAULT_LAYOUT = 1;
+const WEB_DEFAULT_LAYOUT = 4;
 
-interface HomeProps {}
-
-export const Home = function Home({}: HomeProps) {
+export const Home = function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [meals, setMeals] = useState<Meal[]>([]);
 
   const [page, setPage] = useState<number>(0);
 
-  const [meals, setMeals] = useState<Meal[]>([]);
-
   const isMobile = useIsMobile();
-  const [mealCountPerRow, setMealCountPerRow] = useState<number>(
-    isMobile ? 1 : 4
-  );
+  const initMealCountRerRow = isMobile
+    ? MOBILE_DEFAULT_LAYOUT
+    : WEB_DEFAULT_LAYOUT;
+  const [mealCountPerRow, setMealCountPerRow] =
+    useState<number>(initMealCountRerRow);
   useEffect(() => {
-    setMealCountPerRow(isMobile ? 1 : 4);
+    setMealCountPerRow(initMealCountRerRow);
   }, [isMobile]);
 
-  const { value: categoryValue, set: setCategoryValue } = useQueryString(
-    "category",
-    {
-      defaultValue: "",
-      type: "array",
-    }
-  );
+  const { value: categoryValue = "", set: setCategoryValue } =
+    useQueryString("category");
   const [selectedCategory, setSelectedCategory] = useState<string[]>(
-    categoryValue.split(",").filter((item) => item)
+    categoryValue?.split(",").filter((item) => item) || []
   );
 
   useEffect(() => {
     setCategoryValue(selectedCategory.join(","));
   }, [selectedCategory]);
 
-  const { value: filterValue, set: setFilterValue } = useQueryString("filter", {
-    defaultValue: "new",
-    type: "string",
-  });
-  const [sort, setSort] = useState<SortOption>(filterValue as SortOption);
+  const { value: filterValue, set: setFilterValue } = useQueryString("filter");
+
+  const [sort, setSort] = useState<SortOption>(
+    (filterValue || "new") as SortOption
+  );
 
   useEffect(() => {
     getCategories().then((_categories: Category[]) => {
@@ -98,6 +95,32 @@ export const Home = function Home({}: HomeProps) {
     setMeals(_meals.flat());
   };
 
+  const showedMeals = useMemo(() => {
+    return meals
+      .map((meal) => {
+        return {
+          ...meal,
+          strMeal: meal.strMeal.trim(),
+        };
+      })
+      .sort((a, b) => {
+        if (sort === "new") {
+          return b.idMeal - a.idMeal;
+        }
+
+        if (sort === "asc") {
+          return a.strMeal.localeCompare(b.strMeal);
+        }
+
+        if (sort === "desc") {
+          return b.strMeal.localeCompare(a.strMeal);
+        }
+
+        return 0;
+      })
+      .slice(0, Math.min(page * MEAL_PER_PAGE, meals.length));
+  }, [meals, page, sort]);
+
   const handleClickCategory = async (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -122,25 +145,21 @@ export const Home = function Home({}: HomeProps) {
     });
   };
 
-  const showedMeals = useMemo(() => {
-    return [...meals]
-      .sort((a, b) => {
-        if (sort === "new") {
-          return b.idMeal - a.idMeal;
-        }
+  const handleChangeSort = (event: React.ChangeEvent) => {
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
 
-        if (sort === "asc") {
-          return a.strMeal.localeCompare(b.strMeal);
-        }
+    setSort(value as SortOption);
+    setPage(1);
+    setFilterValue(value);
+  };
 
-        if (sort === "desc") {
-          return b.strMeal.localeCompare(a.strMeal);
-        }
+  const handleChangeLayout = (event: React.ChangeEvent) => {
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
 
-        return 0;
-      })
-      .slice(0, Math.min(page * MEAL_PER_PAGE, meals.length));
-  }, [meals, page, sort]);
+    setMealCountPerRow(Number(value));
+  };
 
   return (
     <HomeContainer>
@@ -158,44 +177,28 @@ export const Home = function Home({}: HomeProps) {
           </div>
         </InfoContainer>
         <SelectContainer>
-          <Select
-            value={sort}
-            onChange={(event) => {
-              const target = event.target as HTMLSelectElement;
-              const value = target.value;
-
-              setSort(value as SortOption);
-              setFilterValue(value);
-            }}
-          >
-            <Option value="new">최신순</Option>
-            <Option value="asc">오름차순</Option>
-            <Option value="desc">내림차순</Option>
+          <Select value={sort} onChange={handleChangeSort}>
+            {sortOptions.map((option) => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
           </Select>
 
           {!isMobile && (
-            <Select
-              value={mealCountPerRow}
-              onChange={(event) => {
-                const target = event.target as HTMLSelectElement;
-                const value = target.value;
-
-                setMealCountPerRow(Number(value));
-              }}
-            >
-              <Option value="2">2개씩 보기</Option>
-              <Option value="4">4개씩 보기</Option>
+            <Select value={mealCountPerRow} onChange={handleChangeLayout}>
+              {layoutOption.map((layout) => (
+                <Option key={layout.value} value={layout.value}>
+                  {layout.label}
+                </Option>
+              ))}
             </Select>
           )}
         </SelectContainer>
       </InfoAndSortContainer>
 
-      <MealList
-        meals={meals}
-        showedMeals={showedMeals}
-        mealCountPerRow={mealCountPerRow}
-      />
-      <div ref={ref}>나를 봤다면, 이벤트 실행!!</div>
+      <MealList showedMeals={showedMeals} mealCountPerRow={mealCountPerRow} />
+      <ObserveContainer ref={ref}></ObserveContainer>
     </HomeContainer>
   );
 };
@@ -240,4 +243,11 @@ const InfoContainer = styled("div")`
   gap: 1rem;
 
   flex-wrap: wrap;
+`;
+
+const ObserveContainer = styled("div")`
+  width: 100%;
+  height: 1px;
+  margin-top: 1rem;
+  background-color: transparent;
 `;

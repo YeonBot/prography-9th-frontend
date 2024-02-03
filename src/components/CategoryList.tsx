@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Category } from "../types/category";
+import { Category } from "../types/meal";
 import { useIsMobile } from "../hooks/useIsMobile";
 
 interface CategoryListProps {

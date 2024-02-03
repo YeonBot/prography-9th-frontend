@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Category, Meal } from "../types/category";
+import { Category, Meal } from "../types/meal";
 
 export const getCategories = async () => {
   try {

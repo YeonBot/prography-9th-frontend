@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 
+const isMobileDevice = () =>
+  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+  window.innerWidth < 768;
+
 export const useIsMobile = () => {
-  const initialIsMobile =
-    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-    window.innerWidth < 768;
+  const initialIsMobile = isMobileDevice();
   const [isMobile, setIsMobile] = useState(initialIsMobile);
 
   useEffect(() => {
     const handleResize = () => {
-      const initialIsMobile =
-        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-        window.innerWidth < 768;
-      setIsMobile(initialIsMobile);
+      setIsMobile(isMobileDevice());
     };
 
     handleResize();

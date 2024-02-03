@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useIsElementInViewport } from "../hooks/useIsElementInViewport";
+import { useIsElementInView } from "../hooks/useIsElementInView";
 
 interface MealThumbProps {
   src: string;
@@ -7,7 +7,7 @@ interface MealThumbProps {
 }
 
 export const MealThumb = function MealThumb({ src, alt }: MealThumbProps) {
-  const { elementRef, isVisible } = useIsElementInViewport();
+  const { elementRef, isVisible } = useIsElementInView();
 
   return (
     <MealThumbImage

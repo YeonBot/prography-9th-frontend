@@ -1,17 +1,6 @@
-export const useQueryString = (
-  queryKey: string,
-  {
-    defaultValue,
-    type,
-  }: {
-    defaultValue: string;
-    type: "string" | "array";
-  }
-) => {
+export const useQueryString = (queryKey: string) => {
   const getQueryStringValue = () => {
-    return (
-      new URLSearchParams(window.location.search).get(queryKey) || defaultValue
-    );
+    return new URLSearchParams(window.location.search).get(queryKey);
   };
 
   const setQueryStringValue = (value: string) => {

@@ -1,15 +1,13 @@
 import styled from "styled-components";
-import { Meal } from "../types/category";
+import { Meal } from "../types/meal";
 import { MealThumb } from "./MealThumb";
 
 interface MealListProps {
-  meals: Meal[];
   showedMeals: Meal[];
   mealCountPerRow: number;
 }
 
 export const MealList = function MealList({
-  meals,
   showedMeals,
   mealCountPerRow,
 }: MealListProps) {
