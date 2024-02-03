@@ -69,9 +69,8 @@ export const Home = function Home() {
 
   const { ref, page, setPage } = useInfinityScrollPage();
 
-  // when sort change, initialize page and change query
+  // when sort change, change query
   useEffect(() => {
-    setPage(1);
     setFilterValue(sort);
   }, [sort]);
 

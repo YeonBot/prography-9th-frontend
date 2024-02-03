@@ -16,14 +16,14 @@ export const CategoryList = function CategoryList({
   const isMobile = useIsMobile();
 
   return (
-    <CategoryListContainer isMobile={isMobile}>
+    <CategoryListContainer mobile={isMobile}>
       {categories.map((category) => {
         return (
           <CategoryContainer
             key={category.idCategory}
             data-category={category.strCategory}
             selected={selectedCategory.includes(category.strCategory)}
-            isMobile={isMobile}
+            mobile={isMobile}
             onClick={handleClickCategory}
           >
             {category.strCategory}
@@ -35,19 +35,19 @@ export const CategoryList = function CategoryList({
 };
 
 const CategoryListContainer = styled("div")<{
-  isMobile?: boolean;
+  mobile?: boolean;
 }>`
   display: flex;
   align-items: center;
 
-  gap: ${({ isMobile }) => (isMobile ? "0.5rem" : "1rem")};
+  gap: ${({ mobile }) => (mobile ? "0.5rem" : "1rem")};
 
   flex-wrap: wrap;
 `;
 
 const CategoryContainer = styled("div")<{
   selected: boolean;
-  isMobile?: boolean;
+  mobile?: boolean;
 }>`
   display: flex;
   align-items: center;
@@ -55,8 +55,8 @@ const CategoryContainer = styled("div")<{
 
   border-radius: 100px;
 
-  ${({ isMobile }) => {
-    return isMobile
+  ${({ mobile }) => {
+    return mobile
       ? `
     padding: 8px 12px;
     font-size: 0.8rem;

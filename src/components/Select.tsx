@@ -25,7 +25,7 @@ export const Select = function Select({
           color="black"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M3 8L12 17L21 8" stroke="black" stroke-width="1.5"></path>
+          <path d="M3 8L12 17L21 8" stroke="black" strokeWidth="1.5"></path>
         </svg>
       </ArrowIcon>
     </SelectContainer>
